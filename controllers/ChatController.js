@@ -55,6 +55,39 @@ class ChatController {
         }
     }
 
+    async createMessage(req, res) {
+        let response = {};
+        try {
+            const post_data = req.body;
+            if (await GlobalHelpers.emptyValidator(post_data.user_id)) {
+                response = await GlobalHelpers.responseMessage("api/add_message", "User id is required.", [], {}, 500);
+                return res.status(500).json(response);
+            }
+            if (await GlobalHelpers.emptyValidator(post_data.message)) {
+                response = await GlobalHelpers.responseMessage("api/add_message", "Message is required.", [], {}, 500);
+                return res.status(500).json(response);
+            }
+
+            let insert_message = {
+                user_id: post_data.user_id,
+                message: post_data.message,
+                status: 1,
+                created_at: await DateTimeHelper.formatDate("", ""),
+                updated_at: await DateTimeHelper.formatDate("", "")
+            };
+            let message_id = (await Chat.createMessage(insert_message))[0];
+            post_data.message_id = message_id;
+            let message = await Chat.getMessageByMessageId(post_data);
+            console.log(message);
+
+            response = await GlobalHelpers.responseMessage("api/add_message", "Message added successfully.", [], {}, 200);
+            return res.status(201).json(response);
+        } catch (error) {
+            response = await GlobalHelpers.responseMessage("api/add_message", "Please check the error.", error.message, {}, 500);
+            return res.status(500).json(response);
+        }
+    }
+
 }
 
 module.exports = new ChatController();
