@@ -36,6 +36,25 @@ class ChatController {
         }
     }
 
+    async getUserById(req, res) {
+        let response = {};
+        try {
+            const post_data = req.body;
+            if (await GlobalHelpers.emptyValidator(post_data.user_id)) {
+                response = await GlobalHelpers.responseMessage("api/get_user", "User id is required.", [], {}, 500);
+                return res.status(500).json(response);
+            }
+
+            let user = await Chat.getUserById(post_data);
+
+            response = await GlobalHelpers.responseMessage("api/get_user", "", [], user, 200);
+            return res.status(201).json(response);
+        } catch (error) {
+            response = await GlobalHelpers.responseMessage("api/get_user", "Please check the error.", error.message, {}, 500);
+            return res.status(500).json(response);
+        }
+    }
+
 }
 
 module.exports = new ChatController();
