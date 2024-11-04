@@ -28,7 +28,8 @@ class Chat {
         return await knex('chat_messages')
             .select(
                 'message_id',
-                'user_id',
+                'from_user_id',
+                'to_user_id',
                 'message',
                 'status',
                 knex.raw('DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s") as created_at'),
